@@ -1,0 +1,187 @@
+name: 'Saplings - Header fields'
+description: 'Adds Saplings Header fields on to any content type.'
+type: 'Site'
+recipes:
+  - saplings-media
+install:
+  # Core.
+  - media
+  - media_library
+  - node
+  - options
+  # Contrib.
+  - field_group
+  - media_library_edit
+config:
+  strict:
+    - field.storage.node.sa_description
+    - field.storage.node.sa_featured_media
+    - field.storage.node.sa_header_position
+    - field.storage.node.sa_hide_header
+    - field.storage.node.sa_include_mute_button
+    - field.storage.node.sa_include_pause_button
+    - field.storage.node.sa_overlay
+  import:
+    media_library: '*'
+  actions:
+    # Add Header fields to all content types that are installed.
+    field.storage.node.sa_description:
+      addToAllBundles:
+        label: 'Description'
+        description: 'Use this space to write a short description that is used in teaser cards and social media meta tags.'
+    field.storage.node.sa_featured_media:
+      addToAllBundles:
+        label: 'Featured Media'
+        description: 'Select an Image or Video that is used in the header, teaser cards and social media meta tags.'
+    field.storage.node.sa_header_position:
+      addToAllBundles:
+        label: 'Header Position'
+        description: 'Position the text inside the header.'
+    field.storage.node.sa_hide_header:
+      addToAllBundles:
+        label: 'Hide Header'
+        description: 'Used to hide the header section. Be sure to add an <code><h1></code> if you use this.'
+    field.storage.node.sa_include_mute_button:
+      addToAllBundles:
+        label: 'Include Mute Button'
+        description: 'On a video, adds a mute button for best practices.'
+    field.storage.node.sa_include_pause_button:
+      addToAllBundles:
+        label: 'Include Pause Button'
+        description: 'On a video, adds a pause button for best practices.'
+    field.storage.node.sa_overlay:
+      addToAllBundles:
+        label: 'Overlay'
+        description: 'Adds an light or dark overlay on top of the featured media for readability.'
+    # To set settings on this fields we need to also hit the field instances
+    # after they have been created.
+    field.field.node.*.sa_featured_media:
+      setSettings:
+        handler: 'default:media'
+        handler_settings:
+          target_bundles:
+            image: image
+            remote_video: remote_video
+            video: video
+          sort:
+            field: _none
+            direction: ASC
+          auto_create: false
+          auto_create_bundle: image
+    field.field.node.*.sa_hide_header:
+      setSettings:
+        on_label: 'Yes'
+        off_label: 'No'
+      setDefaultValue:
+        value: 0
+    field.field.node.*.sa_include_mute_button:
+      setSettings:
+        on_label: 'On'
+        off_label: 'Off'
+      setDefaultValue:
+        value: 1
+    field.field.node.*.sa_include_pause_button:
+      setSettings:
+        on_label: 'On'
+        off_label: 'Off'
+      setDefaultValue:
+        value: 1
+    # Place the fields on the all default node forms.
+    core.entity_form_display.node.*.default:
+      setComponents:
+        -
+          name: sa_description
+          options:
+            type: string_textarea
+            weight: 3
+            region: content
+            settings:
+              rows: 5
+              placeholder: ''
+            third_party_settings: {  }
+        -
+          name: sa_featured_media
+          options:
+            type: media_library_widget
+            weight: 5
+            region: content
+            settings:
+              media_types:
+                - image
+                - remote_video
+                - video
+            third_party_settings:
+              media_library_edit:
+                show_edit: '1'
+                edit_form_mode: default
+        -
+          name: sa_header_position
+          options:
+            type: options_select
+            weight: 7
+            region: content
+            settings: {  }
+            third_party_settings: {  }
+        -
+          name: sa_hide_header
+          options:
+            type: boolean_checkbox
+            weight: 8
+            region: content
+            settings:
+              display_label: true
+            third_party_settings: {  }
+        -
+          name: sa_include_mute_button
+          options:
+            type: boolean_checkbox
+            weight: 10
+            region: content
+            settings:
+              display_label: true
+            third_party_settings: {  }
+        -
+          name: sa_include_pause_button
+          options:
+            type: boolean_checkbox
+            weight: 9
+            region: content
+            settings:
+              display_label: true
+            third_party_settings: {  }
+        -
+          name: sa_overlay
+          options:
+            type: string_textfield
+            weight: 6
+            region: content
+            settings:
+              size: 60
+              placeholder: ''
+            third_party_settings: {  }
+      # Configure the header fields in a tab an all default node forms.
+      setThirdPartySettings:
+        - module: field_group
+          key: group_summary
+          value:
+            children:
+              - sa_description
+              - sa_featured_media
+              - sa_overlay
+              - sa_header_position
+              - sa_hide_header
+              - sa_include_mute_button
+              - sa_include_pause_button
+            label: 'Summary'
+            region: content
+            # Assumes we have the parent Tabs.
+            parent_name: group_administration
+            weight: -99
+            format_type: tab
+            format_settings:
+              classes: ''
+              show_empty_fields: false
+              id: ''
+              formatter: closed
+              description: ''
+              required_fields: true

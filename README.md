@@ -1,17 +1,5 @@
-# [Drupal Starter](https://example.com/)
-This is the Drupal Composer Project with docksal configuration to easily get a
-site started.
-
-Features:
-
-- Configured for Pantheon hosting
-- Unopinionated Modern Drupal Installation
-- Composer Installation
-- Docksal Local Development Configuration
-- CircleCI Deployment and Testing configuration
-
-Please make this README as project specific as possible. Delete the things that
-are not relevant or add new sections as needed.
+# [NY Updates 11](http://example.com)
+Desc
 
 
 ## Project specific notes
@@ -24,13 +12,13 @@ Are there any projects specific quirks or setup that should be noted?
 Please put links to the important places here.
 Imagine you know nothing about the project.
 
-* [Local URL]()
-* [Project URL]()
-* [GitHub Repo]()
-* [GitHub Team]()
-* [Pantheon Dev]()
-* [Pantheon Dashboard]()
-* [CircleCI]()
+* [Local URL](https://nyupdates11.docksal.site)
+* [Project URL](http://example.com)
+* [GitHub Repo](https://github.com/kanopi/nyupdates11)
+* [GitHub Team](https://github.com/orgs/kanopi/teams/nyupdates11)
+* [Pantheon Dev](https://dev-nyupdates11.pantheonsite.io)
+* [Pantheon Dashboard](https://dashboard.pantheon.io/sites/467951a6-aa9d-4405-af5c-88a009fc3aec)
+* [CircleCI](https://app.circleci.com/pipelines/github/kanopi/nyupdates11)
 * [Teamwork]()
 
 

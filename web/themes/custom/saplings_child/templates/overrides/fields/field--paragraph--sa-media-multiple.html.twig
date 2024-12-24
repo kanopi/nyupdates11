@@ -1,0 +1,33 @@
+{% for item in items %}
+    {% set media = '' %}
+    {% set mediatype = '' %}
+    {% if item.content['#media'].bundle.value[0].target_id == 'image' %}
+        {% set mediatype = 'image' %}
+        {% set caption = "" %}
+        {% if item.content['#media'].field_caption.value is not empty %}
+            {% set caption = "<div class='caption'>" ~ item.content['#media'].field_caption.value ~ "</div>" %}
+        {% endif %}
+        {% set media = 
+        "<div>
+            <img src='" ~ file_url(item.content['#media'].field_media_image[0].entity.fileuri) ~  "' class='d-block mw-100 mh-100 h-auto w-auto m-auto top-0 end-0 bottom-0 start-0 img-fluid' style='z-index: 1; object-fit: contain;'>" ~
+            caption ~
+        "</div>" 
+        %}
+        
+    {% else %}
+        {% set mediatype = 'remote_video' %}
+        {% set media = item.content['#media'].field_media_oembed_video.value %}
+    {% endif %}
+    <button data-src="{{ media }}" data-toggle="lightbox" data-gallery="mixedgallery" {% if mediatype == 'image' %}data-type="html"{% endif %} class="
+        {% if items|length == 1 %}
+            col-12
+        {% elseif items|length == 2 %}
+            col-12 col-lg-6
+        {% elseif items|length == 7 or items|length == 4 or items|length >= 8 %}
+            col-12 col-lg-3 col-md-6
+        {% elseif items|length == 5 or items|length == 6 %}
+            col-12 col-lg-4 col-md-6
+        {% endif %}">
+        {{ item.content }}
+    </button>
+{% endfor %}

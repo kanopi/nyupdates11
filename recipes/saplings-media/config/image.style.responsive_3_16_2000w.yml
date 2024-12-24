@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: responsive_3_16_2000w
+label: responsive_3_16_2000w
+effects:
+  66191804-6e74-485e-a17c-12b2e3c4a89b:
+    uuid: 66191804-6e74-485e-a17c-12b2e3c4a89b
+    id: focal_point_scale_and_crop
+    weight: -10
+    data:
+      width: 2000
+      height: 10666
+      crop_type: focal_point
+  a15788db-2cf4-439d-9e26-660fbc92fb3c:
+    uuid: a15788db-2cf4-439d-9e26-660fbc92fb3c
+    id: image_convert
+    weight: 10
+    data:
+      extension: webp

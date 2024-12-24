@@ -1,0 +1,21 @@
+/* Individual Stat */
+.stat_paragraph.animated {
+    flex: 1;
+}
+
+.stat_paragraph.animated .stat {
+    font-size: 3.5rem;
+    font-weight: 400;
+    line-height: 112%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.stat_paragraph.animated .stat_description {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.stat_suffix {
+    margin-left: 10px;
+}

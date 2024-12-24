@@ -1,0 +1,19 @@
+{
+    "name": "kanopi/saplings-full-html-editor",
+    "description": "Configures a rich CKEditor experience.",
+    "type": "drupal-recipe",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Jim Birch",
+            "homepage": "https://kanopi.com",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {
+        "drupal/core": ">=10.4",
+        "drupal/editor_advanced_link": "^2",
+        "drupal/linkit": "^7",
+        "drupal/responsive_tables_filter": "^2"
+    }
+}

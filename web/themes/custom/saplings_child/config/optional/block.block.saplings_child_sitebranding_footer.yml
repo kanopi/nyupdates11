@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - block_class
+    - system
+  theme:
+    - saplings_child
+third_party_settings:
+  block_class:
+    classes: 'col col-12 col-md-3'
+id: saplings_child_sitebranding_footer
+theme: saplings_child
+region: footer
+weight: -6
+provider: null
+plugin: system_branding_block
+settings:
+  id: system_branding_block
+  label: 'Site branding'
+  label_display: '0'
+  provider: system
+  use_site_logo: true
+  use_site_name: true
+  use_site_slogan: true
+visibility: {  }

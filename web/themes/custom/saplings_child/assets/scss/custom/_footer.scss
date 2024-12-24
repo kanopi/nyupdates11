@@ -1,0 +1,97 @@
+// Footer.
+#footer {
+  // Footer brand block placed first.
+  #block-saplings-child-sitebranding-footer {
+    padding-inline-start: 2rem;
+  }
+
+  ul.menu.menu--social.navbar-nav {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: unset;
+
+    @include media-breakpoint-down(md) {
+      justify-content: flex-start;
+    }
+
+    i.bi {
+      color: white;
+      font-size: 1.5625rem;
+    }
+
+    .nav-link {
+      padding: unset;
+      position: relative;
+      margin-inline-start: 1rem;
+
+      @include media-breakpoint-down(md) {
+        margin-inline-start: 0;
+        margin-inline-end: 1rem;
+      }
+    }
+
+    .nav-link:after {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0.125rem;
+      transform: scaleX(0);
+      transform-origin: bottom right;
+      transition: transform 200ms ease-out;
+      background-color: #fff;
+      content: "";
+    }
+
+    .nav-link:hover:after {
+      transform: scaleX(1);
+      transform-origin: bottom left;
+    }
+  }
+
+  .navbar-brand {
+    color: #fff;
+    font-size: 1.25rem;
+    margin-right: 1rem;
+  }
+
+  // Alight menus to the right.
+  .navbar-nav {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 2rem;
+
+    // Link styling.
+    a {
+      text-decoration: underline;
+    }
+
+    a:hover {
+      text-decoration: none;
+    }
+  }
+
+  // More link styling.
+  .nav-link,
+  span {
+    color: #fff;
+    display: block;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+    &:not(:last-child) {
+      margin-right: 2rem;
+    }
+  }
+}
+
+// Stack all menus on mobile.
+@include media-breakpoint-down(md) {
+  #footer {
+    .navbar-nav {
+      flex-direction: column;
+      justify-content: start;
+      gap: 0;
+    }
+  }
+}

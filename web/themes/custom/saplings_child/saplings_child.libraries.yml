@@ -1,0 +1,24 @@
+bootstrap:
+  css:
+    theme:
+      dist/css/styles.css: { minified: true }
+
+form:
+  css:
+    component:
+      dist/css/form/form-required.css: { minified: true }
+
+bs5-lightbox:
+  js:
+    https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.3/dist/index.bundle.min.js: { type: external, minified: true }
+
+hero-video:
+  js:
+    dist/js/hero.js: { minified: true }
+
+fontawesome: 
+  js: 
+    https://kit.fontawesome.com/0a9b1aaff7.js: { type: external, minified: false }
+tabs:
+  js:
+    dist/js/tabs.js: { minified: false }

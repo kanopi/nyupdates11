@@ -1,0 +1,6 @@
+saplings_custom.retina:
+  label: Retina
+  mediaQuery: ''
+  weight: 0
+  multipliers:
+    - 2x

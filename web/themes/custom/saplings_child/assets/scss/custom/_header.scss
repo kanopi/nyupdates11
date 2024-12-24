@@ -1,0 +1,145 @@
+// Header.
+.page-header {
+  // Allows for absolute positioning below.
+  @extend .position-relative;
+
+  // Positions text over the image.
+  .page-header__meta,
+  .field--name-sa-description {
+    @extend .position-absolute;
+    @extend .p-5;
+    @extend .w-50;
+    @extend .bottom-0;
+  }
+
+  // Left side.
+  .page-header__meta {
+    @extend .start-0;
+  }
+
+  // Right side.
+  .field--name-sa-description {
+    @extend .end-0;
+  }
+
+  // Default position is the bottom.
+  // This sets the text at the top.
+  &.position_top {
+    .page-header__meta,
+    .field--name-sa-description {
+      @extend .top-0;
+      bottom: auto;
+    }
+  }
+
+  // This sets the text in the middle.
+  &.position_middle {
+    .page-header__meta,
+    .field--name-sa-description {
+      @extend .bottom-50;
+      @extend .top-50;
+      @include media-breakpoint-up(lg) {
+        transform: translateY(-50%);
+      }
+    }
+  }
+}
+
+// Sets large text wether it is in header or not.
+// #main-content so it doesn't show in forms.
+#main-content .field--name-sa-description {
+  @extend .lead;
+}
+
+// A little responsive jazz.
+@include media-breakpoint-down(lg) {
+  .page-header {
+    .page-header__meta,
+    .field--name-sa-description {
+      padding: 1rem !important;
+      position: relative !important;
+      width: 100% !important;
+      transform: none !important;
+    }
+  }
+}
+
+// Overlay.
+// Allows for absolute positioning below.
+[data-overlay] {
+  @extend .position-relative;
+}
+
+// Adds a before element that is the overlay.
+[data-overlay]::before {
+  @extend .position-absolute;
+  @extend .top-0;
+  @extend .start-0;
+  @extend .w-100;
+  @extend .h-100;
+  @extend .d-block;
+  @extend .z-1;
+  content: "";
+}
+
+// Anything in the div is higher than the overlay.
+[data-overlay] * {
+  @extend .z-2;
+}
+
+// Sets dark overlay and white text.
+[data-overlay="dark_90"]::before,
+[data-overlay="dark_75"]::before,
+[data-overlay="dark_50"]::before,
+[data-overlay="dark_25"]::before {
+  background: #252525;
+}
+
+[data-overlay="dark_90"],
+[data-overlay="dark_75"],
+[data-overlay="dark_50"],
+[data-overlay="dark_25"] {
+  .page-header__meta,
+  .field--name-sa-description {
+    @extend .text-white;
+  }
+}
+
+// Sets light overlay and dark text.
+[data-overlay="light_90"]::before,
+[data-overlay="light_75"]::before,
+[data-overlay="light_50"]::before,
+[data-overlay="light_25"]::before {
+  background: #fff;
+}
+
+[data-overlay="light_90"],
+[data-overlay="light_75"],
+[data-overlay="light_50"],
+[data-overlay="light_25"] {
+.page-header__meta,
+  .field--name-sa-description {
+    @extend .text-dark;
+  }
+}
+
+// Sets the different opacity levels for the overlay.
+[data-overlay="light_90"]::before,
+[data-overlay="dark_90"]::before {
+  opacity: 0.9;
+}
+
+[data-overlay="light_75"]::before,
+[data-overlay="dark_75"]::before {
+  @extend .opacity-75;
+}
+
+[data-overlay="light_50"]::before,
+[data-overlay="dark_50"]::before {
+  @extend .opacity-50;
+}
+
+[data-overlay="light_25"]::before,
+[data-overlay="dark_25"]::before {
+  @extend .opacity-25;
+}

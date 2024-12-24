@@ -1,0 +1,18 @@
+name: 'Saplings - Full HTML Editor'
+description: 'Configures a rich CKEditor experience.'
+type: 'Site'
+install:
+  # Core.
+  - ckeditor5
+  - editor
+  - node
+  - media
+  - media_library
+  # Contrib.
+  - editor_advanced_link
+  - linkit
+  - responsive_tables_filter
+config:
+  strict: false
+  import:
+    linkit: '*'

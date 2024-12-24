@@ -1,0 +1,27 @@
+animated-stat:
+  label: "Animated Stat"
+  description: "A statistics that animates counting up when it comes into view."
+  category: "Stats"
+  variants:
+    default:
+      label: "Default"
+  fields:
+    stat_description:
+      type: "textfield"
+      label: "Stat Description"
+    stat_number:
+      type: "integer"
+      label: "Stat Number"
+    stat_prefix:
+      type: "textfield"
+      label: "Stat Prefix"
+    stat_suffix:
+      type: "textfield"
+      label: "Stat Suffix"
+  libraries:
+    - animated-stat:
+        js:
+          js/animated-statistics.js: {}
+        css: 
+          theme: 
+            css/animated-stat.css: {}

@@ -1,0 +1,44 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.sa_overlay
+field_name: sa_overlay
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: light_90
+      label: 'Light - 90%'
+    -
+      value: light_75
+      label: 'Light - 75%'
+    -
+      value: light_50
+      label: 'Light- 50%'
+    -
+      value: light_25
+      label: 'Light - 25%'
+    -
+      value: dark_90
+      label: 'Dark - 90%'
+    -
+      value: dark_75
+      label: 'Dark - 75%'
+    -
+      value: dark_50
+      label: 'Dark - 50%'
+    -
+      value: dark_25
+      label: 'Dark - 25%'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

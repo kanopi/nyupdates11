@@ -11,3 +11,6 @@ set -e
 echo "Create default admin user for Cypress tests."
 fin drush user-create cypress --mail="support+cypress@kanopi.com" --password="cypress" || true
 fin drush user-add-role administrator cypress
+echo "Create Content Editor user for Cypress tests."
+fin drush user-create cypress_editor --mail="support+cypress_editor@kanopi.com" --password="cypress" || true
+fin drush user-add-role content_editor cypress_editor

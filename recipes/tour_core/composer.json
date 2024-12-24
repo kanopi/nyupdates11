@@ -1,0 +1,17 @@
+{
+    "name": "drupal/tour_core",
+    "description": "A recipe for getting tours of Drupal core.",
+    "type": "drupal-recipe",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Stephen Mustgrave",
+            "homepage": "https://www.drupal.org/u/smustgrave",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {
+        "drupal/core": "^10.3 || ^11",
+        "drupal/tour": "^2.0.5"
+    }
+}

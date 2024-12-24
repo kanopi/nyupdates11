@@ -1,0 +1,125 @@
+name: 'Saplings - SEO fields'
+description: 'Adds Saplings SEO fields on to any content type.'
+type: 'Site'
+recipes:
+  - saplings-media
+install:
+  # Core.
+  - media
+  - media_library
+  - node
+  # Contrib.
+  - field_group
+  - media_library_edit
+  - saplings_custom
+config:
+  strict:
+    - field.storage.node.sa_robots
+    - field.storage.node.sa_seo_description
+    - field.storage.node.sa_seo_image
+    - field.storage.node.sa_page-title
+  import:
+    media_library: '*'
+  actions:
+    # Add SEO fields to all content types that are installed.
+    field.storage.node.sa_robots:
+      addToAllBundles:
+        label: 'Robots meta tag'
+        description: '
+          <p>Use this field to customize the Robots meta tag if needed. If you enter nothing here, the default <code>index, follow</code> is assumed.</p>
+
+          <p>The robots meta tag lets you utilize a granular, page-specific approach to controlling how an individual page should be indexed and served to users in search results.</p>
+
+          <p>Visit Google <a href="https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag#directives" target="_blank">Valid indexing and serving rules</a> for a full list of options.</p>'
+    field.storage.node.sa_seo_description:
+      addToAllBundles:
+        label: 'SEO Description'
+        description: 'Use this field to overwrite the default description for SEO meta descriptions.'
+    field.storage.node.sa_seo_image:
+      addToAllBundles:
+        label: 'SEO Image'
+        description: 'Use this field to overwrite the default image for SEO meta tags.'
+    # To set settings on this field we need to also hit the field instances
+    # after they have been created.
+    field.field.node.*.sa_seo_image:
+      setSettings:
+        handler: 'default:media'
+        handler_settings:
+          target_bundles:
+            image: image
+          sort:
+            field: _none
+            direction: ASC
+          auto_create: false
+          auto_create_bundle: ''
+    field.storage.node.sa_seo_page_title:
+      addToAllBundles:
+        label: 'SEO Title'
+        description: 'Use this field to overwrite the default HTML page title for SEO.'
+    # Place the fields on the all default node forms.
+    core.entity_form_display.node.*.default:
+      setComponents:
+        -
+          name: sa_robots
+          options:
+            type: string_textfield
+            weight: 6
+            region: content
+            settings:
+              size: 60
+              placeholder: ''
+            third_party_settings: {  }
+        -
+          name: sa_seo_description
+          options:
+            type: string_textarea
+            weight: 3
+            region: content
+            settings:
+              rows: 5
+              placeholder: ''
+            third_party_settings: {  }
+        -
+          name: sa_seo_image
+          options:
+            type: media_library_widget
+            weight: 4
+            region: content
+            settings:
+              media_types: {  }
+            third_party_settings:
+              media_library_edit:
+                show_edit: '1'
+        -
+          name: sa_seo_page_title
+          options:
+            type: string_textfield
+            weight: 2
+            region: content
+            settings:
+              size: 60
+              placeholder: ''
+            third_party_settings: {  }
+      # Configure the SEO fields in a tab an all default node forms.
+      setThirdPartySettings:
+        - module: field_group
+          key: group_advanced_seo
+          value:
+            children:
+              - sa_seo_page_title
+              - sa_seo_description
+              - sa_seo_image
+              - sa_robots
+            label: 'Advanced SEO'
+            region: content
+            # Assumes we have the parent Tabs.
+            parent_name: group_administration
+            weight: 99
+            format_type: tab
+            format_settings:
+              classes: ''
+              show_empty_fields: false
+              id: ''
+              formatter: closed
+              description: ''
+              required_fields: true

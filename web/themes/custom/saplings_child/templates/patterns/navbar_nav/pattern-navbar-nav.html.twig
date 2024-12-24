@@ -1,0 +1,35 @@
+{% if variant and variant|lower != 'default' %}
+  {% set attributes = attributes.addClass('navbar-nav-' ~ variant|lower|replace({'_': '-'})) %}
+{% endif %}
+
+{% set attributes = attributes.addClass('navbar-nav') %}
+
+{% if items %}
+  <ul{{ attributes }}>
+  {% for item in items %}
+    {% set link_attributes = item.link_attributes|default(create_attribute()) %}
+    {% if item.below %}
+      {{ pattern('dropdown', {
+        'title': item.title,
+        'content': item.below,
+        'dropdown_id': dropdown_id|default("dropdown-" ~ random())  ~ "-" ~ loop.index,
+        'dark': dark,
+        'auto_close': 'true',
+        'dropdown_navbar': true,
+        'attributes': create_attribute({
+          'class': ['nav-item']
+        }),
+        'button_attributes': link_attributes
+      }, 'dropdown') }}
+    {% else %}
+      <li{{ item.attributes.addClass('nav-item') }}>
+        {% if item.url %}
+         <a{{ link_attributes.setAttribute('href', item.url).addClass('nav-link') }}>{{ item.title }}</a>
+        {% else %}
+          <span>{{ item.title }}</span>
+        {% endif %}
+      </li>
+    {% endif %}
+  {% endfor %}
+  </ul>
+{% endif %}

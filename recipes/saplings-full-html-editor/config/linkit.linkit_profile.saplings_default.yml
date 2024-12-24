@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+label: 'Saplings Linkit default'
+id: saplings_default
+description: 'A default Linkit profile'
+matchers:
+  9e9c3670-8480-4b0f-aaf6-bdecf4a36ed7:
+    id: 'entity:node'
+    uuid: 9e9c3670-8480-4b0f-aaf6-bdecf4a36ed7
+    settings:
+      metadata: '[node:content-type:name] #[node:nid] | [node:created:medium] by [node:author]'
+      bundles: {  }
+      group_by_bundle: false
+      substitution_type: canonical
+      limit: 100
+      include_unpublished: false
+    weight: 0

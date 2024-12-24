@@ -1,0 +1,6 @@
+// Cards.
+.card {
+  .card-title {
+    @extend .h5;
+  }
+}

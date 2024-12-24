@@ -1,0 +1,6 @@
+<div class="stat_paragraph animated">
+    <div class="stat">
+        <div class="stat_prefix">{{ stat_prefix|render|striptags }}</div><div class="stat_number" value="{{ stat_number|render|striptags }}">0</div>{% if stat_suffix is not empty %}<div class="stat_suffix">{{ stat_suffix|render|striptags }}</div>{% endif %}
+    </div>
+    <div class="stat_description">{{ stat_description|render|striptags }}</div>
+</div>

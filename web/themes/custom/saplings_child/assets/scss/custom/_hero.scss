@@ -1,0 +1,161 @@
+.paragraph--type--sa-hero {
+  display: flex;
+  flex-direction: column;
+  // justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+
+  @include media-breakpoint-up(lg) {
+    min-height: 55vh;
+  }
+  
+  
+
+  #hero-video-control {
+      background-color: unset;
+      border: 0;
+
+      &.play {
+          .bi-pause {
+              display: none;
+          }
+      }
+
+      &.pause {
+          .bi-play {
+              display: none;
+          }
+      }
+
+      .bi {
+          font-size: 1.5rem;
+      }
+  }    
+
+  .hero-image {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      aspect-ratio: 16 / 9;
+      position: unset !important;
+
+      @include media-breakpoint-down(lg) {
+          position: relative !important;
+          iframe {
+            height: 100% !important;
+            width: 100% !important;
+          }
+      }
+  }
+
+  &.video {
+      @include media-breakpoint-up(lg) {
+          aspect-ratio: 16 / 9;
+      }
+
+      video {
+          height: 100%;
+          width: 100%;
+      }
+  }
+
+  @include media-breakpoint-down(lg) {
+      .hero-content {
+          color: white;
+
+          .bi {
+              color: white;
+          }
+      }
+  }
+
+  @include media-breakpoint-up(lg) {
+      .hero-content {
+        position: relative;
+      }
+
+      /* Overlay. */
+      &[data-overlay] {
+      .hero-content {
+        padding: 20px;
+        color: white;
+
+        .bi {
+          color: white;
+        }
+  
+        // Set all inner content to be higher z-index than before.
+        .text-wrapper, #hero-video-control {
+          position: relative;
+          z-index: 2;
+        }
+  
+        &:before {
+          background: #252525 none repeat scroll 0 0;
+          content: "";
+          display: block;
+          height: 100%;
+          left: 0;
+          position: absolute;
+          top: 0;
+          width: 100%;
+          z-index: 0;
+        }
+  
+        &--overlay-invert {
+          &:before {
+            background: #fff none repeat scroll 0 0;
+          }
+        }
+      }
+      // Loops 1 - 9 and adds opacity $i x 0.1
+      @for $i from 1 through 9 {
+        &[data-overlay="#{$i}"] {
+          .hero-content {
+            &:before {
+              opacity: calc($i * 0.1);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.page-header {
+  @include media-breakpoint-up(lg) {
+    min-height: 55vh;
+    overflow: hidden;
+  }
+
+  &.video {
+    @include media-breakpoint-up(lg) {
+        
+    }
+
+    video {
+        height: 100%;
+        width: 100%;
+    }
+}
+}
+
+.hero-image-page { 
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  aspect-ratio: 16 / 9;
+  z-index: 0 !important;
+  position: unset !important;
+
+  @include media-breakpoint-down(lg) {
+      position: relative !important;
+      iframe {
+        height: 100% !important;
+        width: 100% !important;
+      }
+  }
+}

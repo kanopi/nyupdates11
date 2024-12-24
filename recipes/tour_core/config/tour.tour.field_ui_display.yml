@@ -1,0 +1,52 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - field_ui
+id: field_ui_display
+label: 'Field UI display'
+routes:
+  -
+    route_name: entity.entity_view_display.node.default
+tips:
+  introduction:
+    id: introduction
+    plugin: text
+    label: 'Manage display'
+    weight: 1
+    position: 'auto'
+    selector: null
+    body: 'Manage how the fields of this content type are displayed on your site.'
+  display_modes:
+    id: display_modes
+    plugin: text
+    label: 'Display modes'
+    weight: 2
+    position: 'auto'
+    selector: .tabs--secondary
+    body: 'Display modes allow the same piece of content to be output in different ways. For example, the <b>Default</b> display shows all fields, while the <b>Teaser</b> only one or two. You will be able to choose whenever listing, referencing, or embedding content.'
+  label:
+    id: label
+    plugin: text
+    label: 'Label'
+    weight: 3
+    position: 'auto'
+    selector: '#field-display-overview > thead > tr > th:nth-child(5)'
+    body: 'Each field <strong>Label</strong> can be positioned above, inline or hidden. Choose the "Visually hidden" option if you care about accessibility: it will hide the label but leave it in the HTML for screen readers.'
+  format:
+    id: format
+    plugin: text
+    label: Format
+    weight: 4
+    position: 'auto'
+    selector: '#field-display-overview > thead > tr > th:nth-child(6)'
+    body: 'Formats are used to display field information in different ways. Some formats can be customized by clicking on the cog icon at end of the row. Contributed and (your own) custom modules can extend each field type by providing new formatters and settings.'
+  custom_display_settings:
+    id: custom_display_settings
+    plugin: text
+    label: 'Custom display settings'
+    weight: 5
+    position: 'auto'
+    selector: '#edit-modes'
+    body: 'Extend field display functionality by enabling additional view modes.'

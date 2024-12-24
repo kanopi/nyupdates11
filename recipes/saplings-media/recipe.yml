@@ -1,0 +1,61 @@
+name: 'Saplings - Media'
+description: 'Configures media best practices for modern Drupal.'
+type: 'Site'
+recipes:
+  - core/recipes/audio_media_type
+  - core/recipes/document_media_type
+  - core/recipes/image_media_type
+  - core/recipes/local_video_media_type
+  - core/recipes/remote_video_media_type
+  - imagemagick-configuration
+install:
+  - easy_responsive_images
+  - focal_point
+  - lite_youtube_embed
+  - media_entity_download
+  - media_file_delete
+  - media_library_edit
+config:
+  # If the config we're importing already exists, skip it.
+  strict: false
+  import:
+    focal_point: '*'
+  actions:
+    # Sets all media image fields to use focal point.
+    core.entity_form_display.media.image.*:
+      setComponent:
+        name: field_media_image
+        options:
+          type: image_focal_point
+          weight: 1
+          region: content
+          settings:
+            progress_indicator: throbber
+            preview_image_style: media_library
+            preview_link: true
+            offsets: '50,50'
+    # Sets the Remote video embed to use the lite_youtube_embed widget.
+    core.entity_view_display.media.remote_video.default:
+      setComponent:
+        name: field_media_oembed_video
+        options:
+          type: lite_youtube_embed
+          label: hidden
+          settings:
+            max_width: 0
+            max_height: 0
+          third_party_settings: {  }
+          weight: 0
+          region: content
+    # Delete the file when you delete a media entity.
+    media_file_delete.settings:
+      simpleConfigUpdate:
+        delete_file_default: true
+    # Allow all users to download media.
+    user.role.anonymous:
+      grantPermission: 'download media'
+    user.role.authenticated:
+      grantPermission: 'download media'
+    # Hide core's Files view.
+    views.view.files:
+      disable: {}

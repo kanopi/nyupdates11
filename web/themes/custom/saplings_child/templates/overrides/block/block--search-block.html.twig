@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ * Default theme implementation for a branding block.
+ *
+ * Each branding element variable (logo, name, slogan) is only available if
+ * enabled in the block configuration.
+ *
+ * Available variables:
+ * - site_logo: Logo for site as defined in Appearance or theme settings.
+ * - site_name: Name for site as defined in Site information settings.
+ * - site_slogan: Slogan for site as defined in Site information settings.
+ *
+ * @ingroup templates
+ */
+#}
+<button type="button" aria-label="Search" aria-labelledby="Search" class="btn search" data-bs-toggle="modal" data-bs-target="#searchForm"><i class="bi bi-search" aria-hidden="true"></i></button>
+<div class="modal fade" id="searchForm" tabindex="-1" aria-labelledby="searchForm" aria-modal="true" role="dialog" data-bs-backdrop="false">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% block content %}
+        {{ content }}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+name: 'Tour Core'
+description: 'A recipe for getting tours of Drupal core.'
+type: 'Site'
+install:
+  - block
+  - block_content
+  - dblog
+  - field_ui
+  - menu_ui
+  - node
+  - shortcut
+  - tour
+  - user
+  - views_ui

@@ -1,0 +1,11 @@
+{
+  "name": "kanopi/saplings-fields-header",
+  "description": "Adds Saplings Header fields on to any content type.",
+  "type": "drupal-recipe",
+  "license": "GPL-2.0-or-later",
+  "require": {
+      "drupal/field_group": "*",
+      "drupal/media_library_edit": "*",
+      "kanopi/saplings-media": "*"
+  }
+}

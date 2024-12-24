@@ -1,0 +1,62 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - block
+id: block_layout
+label: 'Block Layout Page'
+routes:
+  -
+    route_name: block.admin_display
+  -
+    route_name: block.admin_display_theme
+tips:
+  block_layout:
+    id: block_layout
+    plugin: text
+    label: 'Block Layout'
+    weight: -100
+    position: auto
+    selector: null
+    body: 'Blocks are boxes of content that can be displayed in regions (such as footer or sidebar) of your pages.'
+  regions_of_a_theme:
+    id: regions_of_a_theme
+    plugin: text
+    label: 'A Layout per Theme'
+    weight: -99
+    position: auto
+    selector: .tabs__link.is-active
+    body: 'Each theme defines its available regions and will have its block layout.'
+  place_block:
+    id: place_block
+    plugin: text
+    label: 'Place Blocks'
+    weight: 2
+    position: 'auto'
+    selector: '#edit-blocks-region-header-title a'
+    body: 'Add a block to a region with this button: you'll see the full library of contributed and custom blocks, and a button to create a new one.'
+  block_region:
+    id: block_region
+    plugin: text
+    label: 'Select Region'
+    weight: 3
+    position: 'auto'
+    selector: .block-region-select
+    body: 'You can quickly change the region of a block with this dropdown list...'
+  place_block_by_drag_drop:
+    id: place_block_by_drag_drop
+    plugin: text
+    label: 'Drag into Region'
+    weight: 4
+    position: 'auto'
+    selector: .tabledrag-handle
+    body: '... or by dragging the block row into the desired region. Remember to save your changes!'
+  configure_block:
+    id: configure_block
+    plugin: text
+    label: 'Configure Block'
+    weight: 5
+    position: 'auto'
+    selector: .dropbutton-widget
+    body: 'From here you can adjust any options the block might have and set its visibility conditions (show it only to some user roles, on certain pages, etc.). Use the dropdown menu to quickly disable or remove it, or, depending on the block type, edit its content.'

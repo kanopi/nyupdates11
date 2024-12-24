@@ -1,0 +1,16 @@
+{
+    "name": "kanopi/saplings_custom",
+    "description": "Custom functionality for the Saplings site starter.",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Jim Birch",
+            "homepage": "https://kanopi.com",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {
+        "drupal/metatag": "^2.0"
+    }
+}

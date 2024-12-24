@@ -1,0 +1,23 @@
+ui_skins_css_variables:
+  bs_gradient:
+    ':root': transparent
+  bs_primary:
+    ':root': '#153e34'
+  bs_primary_rgb:
+    ':root': '21, 62, 53'
+  bs_link_color:
+    ':root': '#cd4b23'
+    '[data-bs-theme="light"]': '#cd4b23'
+    '[data-bs-theme="dark"]': '#cd4b23'
+  bs_link_color_rgb:
+    ':root': '205, 75, 35'
+    '[data-bs-theme="light"]': ' 205, 75, 35'
+    '[data-bs-theme="dark"]': ' 205, 75, 35'
+  bs_link_hover_color:
+    ':root': '#cd4b23'
+    '[data-bs-theme="light"]': '#cd4b23'
+    '[data-bs-theme="dark"]': '#cd4b23'
+  bs_link_hover_color_rgb:
+    ':root': '205, 75, 35'
+    '[data-bs-theme="light"]': '205, 75, 35'
+    '[data-bs-theme="dark"]': '205, 75, 35'

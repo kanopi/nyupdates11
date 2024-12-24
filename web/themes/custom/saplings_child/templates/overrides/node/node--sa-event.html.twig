@@ -1,0 +1,180 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a node.
+ *
+ * Available variables:
+ * - node: The node entity with limited access to object properties and methods.
+ *   Only method names starting with "get", "has", or "is" and a few common
+ *   methods such as "id", "label", and "bundle" are available. For example:
+ *   - node.getCreatedTime() will return the node creation timestamp.
+ *   - node.hasField('field_example') returns TRUE if the node bundle includes
+ *     field_example. (This does not indicate the presence of a value in this
+ *     field.)
+ *   - node.isPublished() will return whether the node is published or not.
+ *   Calling other methods, such as node.delete(), will result in an exception.
+ *   See \Drupal\node\Entity\Node for a full list of public properties and
+ *   methods for the node object.
+ * - label: (optional) The title of the node.
+ * - content: All node items. Use {{ content }} to print them all,
+ *   or print a subset such as {{ content.field_example }}. Use
+ *   {{ content|without('field_example') }} to temporarily suppress the printing
+ *   of a given child element.
+ * - author_picture: The node author user entity, rendered using the "compact"
+ *   view mode.
+ * - metadata: Metadata for this node.
+ * - date: (optional) Themed creation date field.
+ * - author_name: (optional) Themed author name field.
+ * - url: Direct URL of the current node.
+ * - display_submitted: Whether submission information should be displayed.
+ * - attributes: HTML attributes for the containing element.
+ *   The attributes.class element may contain one or more of the following
+ *   classes:
+ *   - node: The current template type (also known as a "theming hook").
+ *   - node--type-[type]: The current node type. For example, if the node is an
+ *     "Article" it would result in "node--type-article". Note that the machine
+ *     name will often be in a short form of the human readable label.
+ *   - node--view-mode-[view_mode]: The View Mode of the node; for example, a
+ *     teaser would result in: "node--view-mode-teaser", and
+ *     full: "node--view-mode-full".
+ *   The following are controlled through the node publishing options.
+ *   - node--promoted: Appears on nodes promoted to the front page.
+ *   - node--sticky: Appears on nodes ordered above other non-sticky nodes in
+ *     teaser listings.
+ *   - node--unpublished: Appears on unpublished nodes visible only to site
+ *     admins.
+ * - title_attributes: Same as attributes, except applied to the main title
+ *   tag that appears in the template.
+ * - content_attributes: Same as attributes, except applied to the main
+ *   content tag that appears in the template.
+ * - author_attributes: Same as attributes, except applied to the author of
+ *   the node tag that appears in the template.
+ * - title_prefix: Additional output populated by modules, intended to be
+ *   displayed in front of the main title tag that appears in the template.
+ * - title_suffix: Additional output populated by modules, intended to be
+ *   displayed after the main title tag that appears in the template.
+ * - view_mode: View mode; for example, "teaser" or "full".
+ * - teaser: Flag for the teaser state. Will be true if view_mode is 'teaser'.
+ * - page: Flag for the full page state. Will be true if view_mode is 'full'.
+ * - readmore: Flag for more state. Will be true if the teaser content of the
+ *   node cannot hold the main body content.
+ * - logged_in: Flag for authenticated user status. Will be true when the
+ *   current user is a logged-in member.
+ * - is_admin: Flag for admin user status. Will be true when the current user
+ *   is an administrator.
+ *
+ * @see template_preprocess_node()
+ *
+ * @ingroup themeable
+ */
+#}
+
+{% set header_position = '' %}
+{% if content.sa_header_position is not empty %}
+  {% set header_position = content.sa_header_position|render|striptags|trim %}
+{% endif %}
+
+{% set overlay_level = '' %}
+{% if content.sa_overlay is not empty %}
+  {% set overlay_level = content.sa_overlay|render|striptags|trim %}
+{% endif %}
+
+{%
+  set classes = [
+    node.bundle|clean_class,
+    node.isPromoted() ? 'is-promoted',
+    node.isSticky() ? 'is-sticky',
+    'container-fluid',
+  ]
+%}
+
+{%
+  set content_classes = [
+    'event-body',
+    'row',
+    'mt-3',
+    'container',
+    'mx-auto',
+  ]
+%}
+<div{{ attributes.addClass(classes) }} role="main">
+  {% if content.sa_hide_header[0]["#markup"] == 1 %}
+    <h1 class="visually-hidden">{{ label }}</h1>
+  {% else %}
+    {# Prints a nice image header. #}
+    {% if content.sa_featured_image[0] is not empty %}
+      <div class="page-header{% if header_position is not empty %} {{ header_position }}{% endif %}"{% if overlay_level is not empty %} data-overlay="{{ overlay_level }}{% endif %}">
+        {{ content.sa_featured_image }}
+        <div class="page-header__meta">
+    {# If there is no image, print a simple header. #}
+    {% else %}
+      <div class="container">
+        <div class="row">
+          <div class="col col-12">
+    {% endif %}
+            {{ title_prefix }}
+            <h1>{{ label }}</h1>
+            {{ title_suffix }}
+            {# {% if node.bundle == 'sa_post' and node.isPublished() %}
+              <div class="field--name-published_at">
+                {{ node.published_at.value|date('F j, Y') }}
+              </div>
+            {% endif %} #}
+
+    {% if content.sa_featured_image[0] is not empty %}
+        </div> <!-- / page-header__meta -->
+    {% endif %}
+        <div class="field--name-sa-description">{{ content.sa_description }}</div>
+    {% if content.sa_featured_image[0] is not empty %}
+      </div> <!-- / page-header -->
+    {% else %}
+          </div> <!-- / col -->
+        </div> <!-- / row -->
+      </div> <!-- / container -->
+    {% endif %}
+  {% endif %}
+  <div{{ content_attributes.addClass(content_classes) }}>
+   <div class="col-md-3 pt-3">
+   <h2>{{ 'Event Info'|t }}</h2>
+    {% if content.sa_cost is not empty %}
+      <div class="field--name-sa-cost mb-3">
+        {{ content.sa_cost }}
+            {% if content.sa_currency is not empty %}
+              <span class="field--name-sa-currency">
+                {{ content.sa_currency }}
+              </span>
+            {% endif %}
+      </div>
+    {% endif %}
+    {% if content.sa_register_link is not empty %}
+      <div class="field--name-sa-register-link mb-3">
+        {{ content.sa_register_link }}
+      </div>
+    {% endif %}
+    {% if content.sa_location is not empty %}
+      <div class="field--name-sa-location mb-3">
+        {{ content.sa_location }}
+      </div>
+    {% endif %}
+    {% if content.sa_event_date is not empty %}
+      <div class="field--name-sa-event-date mb-3">
+        {{ content.sa_event_date }}
+      </div>
+    {% endif %}
+    {% if content.sa_attendance_mode is not empty %}
+      <div class="field--name-sa-attendance-mode mb-3">
+        {{ content.sa_attendance_mode }}
+      </div>
+    {% endif %}
+    {% if content.sa_availability is not empty %}
+      <div class="field--name-sa-availability mb-3">
+        {{ content.sa_availability }}
+      </div>
+    {% endif %}
+   </div>
+   <div class="col-md-9">
+    {{ content|without('published_at', 'sa_location', 'sa_event_date', 'sa_register_link', 'sa_cost', 'sa_attendance_mode', 'sa_availability', 'sa_currency', 'sa_description', 'sa_hide_header', 'sa_featured_image', 'sa_header_position', 'sa_overlay', ) }}
+   </div>
+    
+  </div>
+</div> <!-- / main -->

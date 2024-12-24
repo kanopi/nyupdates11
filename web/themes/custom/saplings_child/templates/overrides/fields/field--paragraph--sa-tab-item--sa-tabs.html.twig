@@ -1,0 +1,29 @@
+{# Check if the field is part of a paragraph #}
+{% if element['#object'] is defined %}
+  {# Get the parent paragraph entity #}
+  {% set parent_paragraph = element['#object'].id.value %}
+{% endif %}
+{% set pane_id_base = "pane-" ~ random() %}
+<div class="d-lg-block d-none">
+  {% set tabs = [] %}
+  {% for item in items %}
+    {% set tab = pattern('nav_item', {
+    link: item.content|merge({'#view_mode': 'sa_tab_item'}) ,
+    toggle: parent_paragraph ~ '-' ~ loop.index,
+    active: loop.first
+  }) %}
+    {% set tabs = tabs|merge([tab])%}
+  {% endfor %}
+  {{ pattern('nav_tabs', {
+  items: tabs
+}, 'tabs nav-tabs-responsive') }}
+
+</div>
+
+<div class="tab-content">
+  {% for item in items %}
+
+    {% set item = loop.first ? item.content|add_class(["show", "active"]) : item.content %}
+    {{ item|add_class("tab-pane")|set_attribute("id", parent_paragraph ~ '-' ~ loop.index) }}
+  {% endfor %}
+</div>

@@ -6,11 +6,11 @@
     "allow_update_branch": true,
     "default_branch": "main",
     "delete_branch_on_merge": true,
-    "description": "Created with kanopi/drupal-starter",
+    "description": "Desc",
     "has_issues": true,
     "has_projects": false,
     "has_wiki": false,
-    "homepage": "https://www.kanopi.com",
+    "homepage": "http://example.com",
     "security_and_analysis": {
         "advanced_security": {
             "status": "enabled"

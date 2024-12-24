@@ -1,0 +1,60 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - field_ui
+id: field_ui_form_display
+label: 'Field UI form display'
+routes:
+  -
+    route_name: entity.entity_form_display.node.default
+tips:
+  introduction:
+    id: introduction
+    plugin: text
+    label: 'Manage form display'
+    weight: 1
+    position: 'auto'
+    selector: null
+    body: 'Manage how the fields are displayed in forms (when adding or editing content) by reordering them or changing their widget settings.'
+  field_widget:
+    id: field_widget
+    plugin: text
+    label: 'Field Widget'
+    weight: 2
+    position: 'bottom-start'
+    selector: '.field-plugin-type'
+    body: 'Each field type has one or more widgets to customize its input method. Any contributed or (your own) custom module can define new widgets.'
+  widget_settings:
+    id: widget_settings
+    plugin: text
+    label: 'Widget Settings'
+    weight: 3
+    position: 'bottom'
+    selector: '.field-plugin-summary-cell'
+    body: 'Some widgets are configurable. Here you can see the summary of the current widget settings. Use the cog icon on the side to change them.'
+  widget:
+    id: widget
+    plugin: text
+    label: 'Show/Hide Fields'
+    weight: 4
+    position: 'auto'
+    selector: 'tbody tr:last-child'
+    body: 'To show or hide a field, drag & drop it above or below the <b>Disabled</b> section.'
+  show_row_weights:
+    id: show_row_weights
+    plugin: text
+    label: 'Show/Hide Row weights'
+    weight: 5
+    position: 'auto'
+    selector: '.tabledrag-toggle-weight'
+    body: 'Especially with many fields, it may become easier to reorder or hide them by first clicking this button. This will toggle between the draggable handles and the <b>Weight</b>, <b>Parent</b>, and <b>Region</b> inputs for each row. Try it now!'
+  save_changes:
+    id: save_changes
+    plugin: text
+    label: 'Save Changes'
+    weight: 6
+    position: 'auto'
+    selector: '#edit-actions'
+    body: 'Remember to save changes to all your fields (their ordering, widget selection and settings).'
