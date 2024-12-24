@@ -1,0 +1,422 @@
+# https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
+TERMINUS_SITE: &TERMINUS_SITE "PANTHEON_PROJECT_MACHINE_NAME"
+PANTHEON_UUID: &PANTHEON_UUID "xxx"
+THEME_NAME: &THEME_NAME "saplings_child"
+THEME_PATH: &THEME_PATH "web/themes/custom/saplings_child"
+CYPRESS_NODE_VERSION: &CYPRESS_NODE_VERSION "20.11.0" # Matches NVMRC file.
+CYPRESS_CIMG_PHP: &CYPRESS_CIMG_PHP "cimg/php:8.3-browsers"
+THEME_NODE_VERSION: &THEME_NODE_VERSION "20.11.0" # Matches NVMRC file.
+CIMG_PHP: &CIMG_PHP "cimg/php:8.3" # This is the version of PHP set in pantheon.yml/docksal.env.
+CIMG_PHP_TAG: &CIMG_PHP_TAG "8.3.8"
+CIMG_PHP_TAG_MAJOR: &CIMG_PHP_TAG_MAJOR "8.3" # This is the version of PHP set in pantheon.yml/docksal.env.
+
+defaults: &defaults
+  docker:
+    - image: quay.io/pantheon-public/build-tools-ci:8.x-php8.3
+  working_directory: ~/example_drops_8_composer
+  environment:
+    TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+    NOTIFY: 'scripts/github/add-commit-comment {project} {sha} "Created multidev environment [{site}#{env}]({dashboard-url})." {site-url}'
+    ADMIN_USERNAME: admin
+    TERM: dumb
+    TERMINUS_SITE: *TERMINUS_SITE
+    THEME_NAME: *THEME_NAME
+    DEFAULT_BRANCH: main
+
+version: 2.1
+
+orbs:
+  ci-tools: kanopi/ci-tools@2
+  cms-updates: kanopi/cms-updates@2
+  slack: circleci/slack@3.4.2
+  node: circleci/node@5.0.3
+
+jobs:
+  compile-theme:
+    docker:
+      - image: *CIMG_PHP
+    working_directory: ~/project
+    steps:
+      - checkout
+      - node/install:
+          node-version: *THEME_NODE_VERSION
+      - restore_cache:
+          keys:
+            - drupal-theme-{{ checksum "composer.lock" }}
+
+      - restore_cache:
+          name: Restore Node cache
+          keys:
+            - node-theme-{{ checksum "web/themes/custom/saplings_child/package-lock.json" }}
+
+      - run:
+          name: Composer install for theme dependencies
+          command: |
+            composer install
+
+      - run:
+          name: Install Node Packages.
+          command: npm ci
+          path: *THEME_PATH
+
+      - save_cache:
+          name: Save composer cache
+          key: drupal-theme-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+
+      - save_cache:
+          name: Save node cache
+          key: node-theme-{{ checksum "web/themes/custom/saplings_child/package-lock.json" }}
+          paths:
+            - ~/.npm
+
+      - run:
+          name: Compile Assets
+          command: npm run build
+          path: *THEME_PATH
+
+      - persist_to_workspace:
+          root: *THEME_PATH
+          paths:
+            - dist
+
+  cypress:
+    docker:
+      - image: *CYPRESS_CIMG_PHP
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASS
+    environment:
+      TERMINUS_SITE: *TERMINUS_SITE
+      PANTHEON_UUID: *PANTHEON_UUID
+    resource_class: large
+    steps:
+      - ci-tools/set-variables
+      - checkout
+      - restore_cache:
+          keys:
+            - drupal-cypress-{{ checksum "composer.lock" }}
+      - run:
+          name: run Composer install for Shrubs
+          command: |
+            composer install
+      - save_cache:
+          key: drupal-cypress-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+      - ci-tools/copy-ssh-key
+      - node/install:
+          node-version: *CYPRESS_NODE_VERSION
+      - ci-tools/install-terminus
+      - run:
+          name: Authorize terminus
+          command: terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
+      - run:
+          name: Prime Cache
+          command: curl -I "${SITE_URL}"
+      - run:
+          name: Set Variables
+          command: |
+            (
+                echo "export CYPRESS_BASE_URL='${SITE_URL}'"
+                echo "export PR_ENVIRONMENT='${TERMINUS_SITE}.pr-${CIRCLE_PULL_REQUEST##*/}'"
+                echo "export CYPRESS_DRUSH_IS_PANTHEON='pr-${CIRCLE_PULL_REQUEST##*/}.${PANTHEON_UUID}'"
+            ) >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          name: Create the test user
+          command: |
+            ## Make it so it doesn't fail if the user already exists
+            terminus -n drush "$PR_ENVIRONMENT" -- user-create cypress --mail="cypress@mailinator.com" --password="cypress" || true
+            terminus -n drush "$PR_ENVIRONMENT" -- user-add-role administrator cypress || true
+      - run:
+          name: Install Cypress
+          command: npm ci
+          path: tests/cypress
+      - run:
+          name: Run Tests
+          command: |
+            shopt -s globstar
+            circleci tests glob cypress/e2e/**/*.cy.js | circleci tests split --split-by=timings > /tmp/tests-to-run
+            ./node_modules/.bin/cypress run -s $(cat /tmp/tests-to-run)
+          path: tests/cypress
+      - run:
+          when: always
+          name: Generate Report
+          command: npm run merge:reports
+          path: tests/cypress
+      - store_test_results:
+          path: tests/cypress/cypress/junit
+      - store_artifacts:
+          path: tests/cypress/cypress/
+  deploy-to-pantheon:
+    <<: *defaults
+    steps:
+      - checkout
+      - ci-tools/copy-ssh-key
+      - ci-tools/remove-files:
+          docroot: "web"
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          # Set TERMINUS_ENV and related environment variables.
+          # https://github.com/pantheon-systems/docker-build-tools-ci/blob/6.x/scripts/set-environment
+          name: setup-environment-vars
+          command: /build-tools-ci/scripts/set-environment
+      - restore_cache:
+          keys:
+            - drupal-{{ checksum "composer.lock" }}
+      - run:
+          name: run Composer setup
+          command: |
+            composer -n build-assets
+            composer run prepare-for-pantheon
+      - save_cache:
+          key: drupal-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+      - run:
+          name: Copy compiled theme assets.
+          environment:
+            THEME_PATH: *THEME_PATH
+          command: |
+            cp -vr /tmp/workspace/dist "$THEME_PATH"
+      # Deploy to Pantheon
+      - run:
+          name: deploy to Pantheon
+          command: ./.circleci/scripts/pantheon/dev-multidev
+          no_output_timeout: 1h
+#      - slack/notify:
+#          message: "Finished multidev build ${MULTIDEV_SITE_URL}\n
+#          Branch: *${CIRCLE_BRANCH}*\n
+#          PR: ${CIRCLE_PULL_REQUEST}"
+#          include_job_number_field: false
+#          include_project_field: false
+#          webhook: https://hooks.slack.com/services/T02BTKQ5F/B0225B1RPV1/9999111100000
+
+workflows:
+
+  PHPstan:
+    jobs:
+      - ci-tools/composer:
+          tag: *CIMG_PHP_TAG
+          name: "PHPstan"
+          context: kanopi-code
+          command: 'phpstan'
+          save-output: true
+          post-to-github: true
+          post-artifact-to-github-when: on_fail
+          report-title: ":x: phpstan"
+          filters:
+            branches:
+              ignore:
+                - main
+  PHPcs:
+    jobs:
+      - ci-tools/composer:
+          tag: *CIMG_PHP_TAG
+          name: "PHPcs"
+          context: kanopi-code
+          command: 'code-sniff'
+          save-output: true
+          post-to-github: true
+          post-artifact-to-github-when: on_fail
+          report-title: ":x: phpcs"
+          filters:
+            branches:
+              ignore:
+                - main
+  Rector - modules:
+    jobs:
+      - ci-tools/composer:
+          tag: *CIMG_PHP_TAG
+          name: "Rector modules"
+          context: kanopi-code
+          command: 'rector-modules'
+          save-output: true
+          post-to-github: true
+          post-artifact-to-github-when: on_fail
+          report-title: ":x: rector-modules"
+          filters:
+            branches:
+              ignore:
+                - main
+  Rector - themes:
+    jobs:
+      - ci-tools/composer:
+          tag: *CIMG_PHP_TAG
+          name: "Rector themes"
+          context: kanopi-code
+          command: 'rector-themes'
+          save-output: true
+          post-to-github: true
+          post-artifact-to-github-when: on_fail
+          report-title: ":x: rector-themes"
+          filters:
+            branches:
+              ignore:
+                - main
+  Twig lint:
+    jobs:
+      - ci-tools/composer:
+          tag: *CIMG_PHP_TAG
+          name: "Twig lint"
+          context: kanopi-code
+          command: 'twig-lint'
+          save-output: true
+          post-to-github: true
+          post-artifact-to-github-when: on_fail
+          report-title: ":x: twig-lint"
+          filters:
+            branches:
+              ignore:
+                - main
+  Deployment:
+    when:
+      not:
+        equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]
+    jobs:
+      - compile-theme:
+          context: kanopi-code
+      - deploy-to-pantheon:
+          context: kanopi-code
+          filters:
+            branches:
+              ignore: /^dependabot/
+          requires:
+            - compile-theme
+      - cypress:
+          requires:
+            - deploy-to-pantheon
+          context: kanopi-code
+          pre-steps:
+            - ci-tools/set-pantheon-url
+          filters:
+            branches:
+              ignore:
+                - main
+          post-steps:
+            ## Do two different GitHub posts to capture passes/fails separately.
+            - ci-tools/post-artifact-to-github:
+                when: 'on_fail'
+                body-prefix: ":x: Test runner: **$CIRCLE_NODE_INDEX / $CIRCLE_NODE_TOTAL** "
+                body-title: "Failing Cypress Run"
+                search-for: "results/mocha-report/mochawesome.html"
+            - ci-tools/post-artifact-to-github:
+                when: 'on_success'
+                body-prefix: ":white_check_mark: Test runner: **$CIRCLE_NODE_INDEX / $CIRCLE_NODE_TOTAL** "
+                body-title: "Passing Cypress Run"
+                search-for: "results/mocha-report/mochawesome.html"
+
+      - ci-tools/lighthouse:
+          requires:
+            - deploy-to-pantheon
+          context: kanopi-code
+          pre-steps:
+            - ci-tools/set-pantheon-url:
+                site-id: *TERMINUS_SITE
+                store-as: LIGHTHOUSE_URL
+          url: "${LIGHTHOUSE_URL}"
+          post-steps:
+            - ci-tools/post-to-github-commit:
+                body: '@$(ls /opt/reports/*/comment.txt)'
+                when: 'always'
+          filters:
+            branches:
+              ignore:
+                - main
+
+      - ci-tools/pa11y:
+          requires:
+            - deploy-to-pantheon
+          context: kanopi-code
+          urls: "${PR_ENV_URL}"
+          # Replace the primary URL with a Pantheon multidev URL.
+          pre-steps:
+            - ci-tools/set-pantheon-url:
+                site-id: *TERMINUS_SITE
+                store-as: PR_ENV_URL
+          # Post the pa11y results file as a comment on the PR.
+          post-steps:
+            - ci-tools/post-to-github-commit:
+                body: '@/tmp/pa11y-ci-results.txt'
+                when: 'on_fail'
+          filters:
+            branches:
+              ignore:
+                - main
+
+      - ci-tools/sdtt:
+          requires:
+            - deploy-to-pantheon
+          context: kanopi-code
+          url: "${PR_ENV_URL}"
+          # Replace the primary URL with a Pantheon multidev URL.
+          pre-steps:
+            - ci-tools/set-pantheon-url:
+                site-id: *TERMINUS_SITE
+                store-as: PR_ENV_URL
+          # Posts a link to the report to the PR.
+          post-steps:
+            - ci-tools/post-artifact-to-github:
+                body-prefix: "Click here to view the report:"
+                body-title: "❌ Structured Data Testing Tool failure - Homepage"
+                search-for: tmp/sdtt-results.txt
+                when: 'on_fail'
+          filters:
+            branches:
+              ignore:
+                - main
+
+      - ci-tools/backstopjs:
+          requires:
+            - deploy-to-pantheon
+          context: kanopi-code
+          # Defines the pages, and gives them a label.
+          # It is a comma separated list.
+          # Add as many as you need.
+          # urls: '/|Homepage,/style-guide|Style Guide'
+          # URLs now loaded in backstop.json
+          # Load additional configuration from the backstop.json file.
+          # See https://github.com/garris/BackstopJS#advanced-scenarios.
+          advanced-config: true
+          # Sets the URL to test to be the Pantheon multidev.
+          search-find: 'TEST_URL'
+          search-replace: '${TEST_URL}'
+          pre-steps:
+            - ci-tools/set-pantheon-url:
+                site-id: *TERMINUS_SITE
+                store-as: TEST_URL
+            - ci-tools/set-pantheon-url:
+                site-id: *TERMINUS_SITE
+                site-env: "dev"
+                store-as: REFERENCE_URL
+          # Posts a link to the report to the PR.
+          post-steps:
+            - ci-tools/post-artifact-to-github:
+                body-prefix: "❌ There was a failure. Click here to view the report:"
+                body-title: BackstopJS
+                search-for: html_report/index.html
+                when: 'on_fail'
+          # Don't run it on main because that is the url it tests against.
+          filters:
+            branches:
+              ignore: main
+
+  automated-updates:
+    when:
+      and:
+        # Looks for a trigger to run in the CircleCI project with the "automatic updates" name.
+        - equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]
+        - equal: [ "automatic updates", << pipeline.schedule.name >> ]
+    jobs:
+      - cms-updates/run-update:
+          cms: drupal
+          docroot: web
+          site-env: dev
+          site-hosting: pantheon
+          site-id: *TERMINUS_SITE
+          update-method: composer
+          context: kanopi-code
+          php-version: *CIMG_PHP_TAG_MAJOR
