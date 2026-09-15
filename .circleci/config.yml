@@ -1,6 +1,7 @@
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
 TERMINUS_SITE: &TERMINUS_SITE "nyupdates11"
-PANTHEON_UUID: &PANTHEON_UUID "467951a6-aa9d-4405-af5c-88a009fc3aec"
+PANTHEON_UUID: &PANTHEON_UUID "467951a6-aa9d-4405-af5c-88a009fc3aec
+"
 THEME_NAME: &THEME_NAME "saplings_child"
 THEME_PATH: &THEME_PATH "web/themes/custom/saplings_child"
 CYPRESS_NODE_VERSION: &CYPRESS_NODE_VERSION "20.11.0" # Matches NVMRC file.
@@ -155,6 +156,7 @@ jobs:
     steps:
       - checkout
       - ci-tools/copy-ssh-key
+      - ci-tools/github-app-token
       - ci-tools/remove-files:
           docroot: "web"
       - attach_workspace:
